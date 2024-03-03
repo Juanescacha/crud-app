@@ -13,7 +13,15 @@ class PostController extends Controller
 	 */
 	public function index()
 	{
-		// 
+		return Inertia::render('Posts/Index', [
+			'posts' => Post::all()->map(function ($post) {
+				return [
+					'id' => $post->id,
+					'name' => $post->name,
+					'content' => $post->content,
+				];
+			})
+		]);
 	}
 
 	/**
