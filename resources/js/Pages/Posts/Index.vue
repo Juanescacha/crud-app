@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link, router } from "@inertiajs/vue3";
-import { onMounted, computed, ref, watch } from "vue";
+import { onMounted, computed, ref } from "vue";
 
 const props = defineProps({
     posts: Object,
@@ -14,6 +14,7 @@ const message = computed(() => props.flash.message);
 const destroy = (id) => {
     if (confirm("Are you sure?")) {
         router.delete(route("posts.destroy", id));
+        scheduleHide();
     }
 };
 
@@ -25,10 +26,6 @@ const scheduleHide = () => {
 };
 
 onMounted(() => {
-    scheduleHide();
-});
-
-watch(message, (newValue) => {
     scheduleHide();
 });
 </script>
@@ -47,10 +44,10 @@ watch(message, (newValue) => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <Transition name="message">
+                        <Transition name="message" appear>
                             <div
                                 v-if="message && isVisible"
-                                class="mb-4 text-blue-500 font-bold bg-blue-100 p-3 rounded"
+                                class="bg-green-500 text-white font-bold p-4 rounded-md fixed bottom-4 right-4 z-50 shadow-lg shadow-green-400/80"
                             >
                                 {{ message }}
                             </div>
@@ -150,12 +147,13 @@ watch(message, (newValue) => {
 <style scoped>
 .message-enter-active,
 .message-leave-active {
-    transition: opacity 0.5s ease;
+    transition: all 0.5s ease-in;
 }
 
 .message-enter-from,
 .message-leave-to {
     opacity: 0;
+    transform: scale(0) translateY(500px);
 }
 
 .list-enter-active,
