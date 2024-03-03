@@ -70,7 +70,12 @@ class PostController extends Controller
 	 */
 	public function update(Request $request, Post $post)
 	{
-		// 
+		$validate = $request->validate([
+			'name' => 'required|max:100',
+			'content' => 'required|max:255',
+		]);
+		$post->update($validate);
+		return redirect()->route('posts.index')->with('message', 'Post updated successfully');
 	}
 
 	/**
