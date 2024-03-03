@@ -1,17 +1,36 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link, router } from "@inertiajs/vue3";
-import { computed } from "vue";
+import { onMounted, computed, ref, watch } from "vue";
 
 const props = defineProps({
     posts: Object,
+    flash: Object,
 });
+
+const isVisible = ref(true);
+const message = computed(() => props.flash.message);
 
 const destroy = (id) => {
     if (confirm("Are you sure?")) {
         router.delete(route("posts.destroy", id));
     }
 };
+
+const scheduleHide = () => {
+    isVisible.value = true;
+    setTimeout(() => {
+        isVisible.value = false;
+    }, 3000);
+};
+
+onMounted(() => {
+    scheduleHide();
+});
+
+watch(message, (newValue) => {
+    scheduleHide();
+});
 </script>
 
 <template>
@@ -28,6 +47,14 @@ const destroy = (id) => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
+                        <Transition name="message">
+                            <div
+                                v-if="message && isVisible"
+                                class="mb-4 text-blue-500 font-bold bg-blue-100 p-3 rounded"
+                            >
+                                {{ message }}
+                            </div>
+                        </Transition>
                         <Link
                             :href="route('posts.create')"
                             class="inline-block px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded mb-4"
@@ -121,6 +148,16 @@ const destroy = (id) => {
 </template>
 
 <style scoped>
+.message-enter-active,
+.message-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.message-enter-from,
+.message-leave-to {
+    opacity: 0;
+}
+
 .list-enter-active,
 .list-leave-active {
     transition: all 0.5s ease;
